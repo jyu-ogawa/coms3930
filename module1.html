@@ -12,8 +12,81 @@
     </header>
     <main>
         <section>
-            <h2>Introduction</h2>
-            <p>This is the documentation for Module 1 of the COMS BC3930 course.</p>
+            <article class="module-project">
+            <h2>Generative Art</h2>          
+            <p>For Module 1, the theme of the project was transitions. Initially, I had thought of the seasonal changes and the transition between different periods of life, but the collective brainstorm session in class inspired me to also think about colour gradients.</p>
+
+            <p>Lately, I have been quite interested in the work of Swedish pioneer artist Hilma af Klint (1862–1944). Now considered to be among the first to explore Abstraction within Western art history, she drew from spiritualism in her artistic practice and often explored diagrams to reflect upon human nature and the world of the soul. One of her most famous works is the series <em>The Ten Largest</em>, which was the focal point of my project.</p>
+
+            <p>Dating back to 1907 and completed in just 40 days, the work is a collection of gigantic paintings (3.28m × 2.40m) that celebrates the journey across the four ages of humanity: Childhood, Youth, Adulthood, and Old Age. Based on a notion of evolution, as present in most of her art, they are focused on an evolution on a spiritual plane, rather than physical developments.</p>
+            
+            <img src="images/module-1/ten_largest.jpg" alt="The Ten Largest, Hilma af Klint" class="image_size">
+            <div class = "image_caption">
+                <p>The Ten Largest, Hilma af Klint. Photography: Åsa Lundén / Moderna Museet</p>
+            </div>
+
+            <p>My intent with my project was to consider transition paying homage to <em>The Ten Largest</em>. As the foreground element, I decided to have bubbles floating up the screen. Referencing the many spherical shapes present in the paintings, but also it was the shape that most embodied outerworldness to me (the images of soap bubbles came often to mind). The background colours, drawn from the series, transition into the next illustrating the shift into different periods of life.</p>
+
+            <p>To attempt to execute my vision, I initially experimented with the default colours available in the <code>TFT_eSPI.h</code> library, which had been used in the example codes. An initial obstacle was finding a way to see through them in the actual display, which I conquered by writing a small program to go through all of them in a loop. To my delight, I was able to find satisfying matches (<code>TFT_NAVY</code>, <code>TFT_BLUE</code>, <code>TFT_SKYBLUE</code>, <code>TFT_ORANGE</code>, <code>TFT_PURPLE</code>, <code>TFT_PINK</code>, <code>TFT_RED</code>).</p>
+
+            <img src="images/module-1/0-goodnotes_sketch.jpeg" alt="goodnotes sketch" class="image_size">
+            <div class = "image_caption">
+                <p>Initial planning and brainstormings</p>
+            </div>
+
+            <p>Then, I worked on getting these colours to transition into one another in a gradient manner. If I had just coded to switch the colour, there was no transition; it was a direct change. Looking at what was available for the TFT library, I found <code>alphaBlend()</code> useful to provide me with intermediate colours to fill the screen.</p>
+
+            <p>An issue that I faced was getting the bubbles to behave as I desired, which is why I also settled on only having one shape rather than trying to recreate more of the patterns present in the paintings. Through them, I implemented the generative aspect of the assignment by making them spawn at random colours, floating speeds, intervals and amounts. Initially, they kept flickering and did not have a smooth animation, so I had assistance from Gemini in order to fix this issue, such that I had to use a sprite (for double buffering). The problem with my original method was that there were too many things (backgrounds, bubbles, etc) for the screen to update at once, so a sprite was used so that the frame was first completed in the buffer to then be displayed on the screen.</p>
+
+            <p>The time period for each of the colour transitions was determined by the amount of paintings each one had (for example, there are four with purple backgrounds, so this colour had the largest screen time). Additionally, I added a red background last, which is not present in the series, but I thought it made for a better gradient transition and it was also chosen to represent the spiritual, transcendental love as present in her <em>Evolution</em> series (1908).</p>
+
+            <p>For the Display Installation, the following materials were used:</p>  
+            <ul>
+                <li>ESP32 TTGO T-display</li>
+                <li>Lipo battery</li>
+                <li>Alcohol Markers</li>
+                <li>Envelope</li>
+                <li>String</li>
+                <li>Bamboo Stick</li>
+                <li>Tape</li>
+            </ul>
+
+            <img src="images/module-1/9-materials.JPG" alt="scissor, string and tape" class="image_size">
+            <img src="images/module-1/7-blank_envelopes.JPG" alt="blank envelopes" class="image_size">
+            <div class = "image_caption">
+                <p>Materials used for the display installation.</p>
+            </div>
+            <p>Since I was unable to include other elements of the series, besides the spheres, in my display, I drew them on the envelope that encased the microcontroller using my mechanical pencil and alcohol markers. To power the ESP32, a Lipo battery was attached, which allowed it to work for about a day. Wiring a string through the holes perforated on the envelope (about a 4 feet long) and attaching the other end to a bamboo stick, the project was hung in the Computational Science Center social space.</p>
+
+            <img src="images/module-1/1-beginning_drawing.JPG" alt="beginning drawing" class="image_size">
+            <img src="images/module-1/2-process_drawing.JPG" alt="process drawing" class="image_size">
+            <br>
+            <img src="images/module-1/3-envelope_drawing_closeup.JPG" alt="envelope drawing closeup" class="image_size">
+            <img src="images/module-1/4-battery_envelope.JPG" alt="battery and envelope" class="image_size">
+            <div class = "image_caption">
+                <p>Envelope process</p>
+            </div>
+
+            <p>The code is available here: <a href=https://github.com/jyu-ogawa/coms3930-module-1>GitHub Repo</a></p>
+
+            <video width="640" height="360" controls preload="metadata">
+            <source src="videos/final_installation.mp4" type="video/mp4">
+            </video>
+            <div class = "image_caption">
+                <p>Final Installation Display Video</p>
+            </div>
+
+            <h2>References</h2>
+            <ul>
+                <li><a href="https://www.moma.org/artists/71905-hilma-af-klint" target="_blank" rel="noopener noreferrer">MoMA – Hilma af Klint</a></li>
+                <li><a href="https://hilmaafklint.se/" target="_blank" rel="noopener noreferrer">Hilma af Klint Official Website</a></li>
+                <li><a href="https://www.modernamuseet.se/en/stockholm/exhibitions/hilma-af-klint-de-tio-storsta-2022/" target="_blank" rel="noopener noreferrer">Moderna Museet – Hilma af Klint: The Ten Largest</a></li>
+                <li><a href="https://www.grandpalais.fr/en/magazine/hilma-af-klints-paintings-temple-mission-guided-angels" target="_blank" rel="noopener noreferrer">Grand Palais – Hilma af Klint's Paintings for the Temple</a></li>
+                <li><a href="https://www.guggenheim.org/audio/track/group-vi-evolution-no-15-1908-by-hilma-af-klint" target="_blank" rel="noopener noreferrer">Guggenheim – Group VI, Evolution, No. 15 (1908) Audio Guide</a></li>
+                <li><a href="https://doc-tft-espi.readthedocs.io/tft_espi/colors/" target="_blank" rel="noopener noreferrer">TFT_eSPI Documentation – Colors</a></li>
+                <li><a href="https://goldenmorninglcd.com/tft-displays-everything-you-need-to-know/#h-alpha-blending" target="_blank" rel="noopener noreferrer">Golden Morning LCD – Alpha Blending in TFT Displays</a></li>
+            </ul>
+            </article>
         </section>
     </main>
 </body>
