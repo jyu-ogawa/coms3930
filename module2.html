@@ -20,21 +20,21 @@
             <article class="module-project">
             <h2>Interactive Devices</h2>
             
-            <p>For Module 2, the goal was to create an interactive device using the ESP32 TTGO T-display, a joystick, a push button, and a potentiometer. By sending sensor data via serial communication to a laptop, the program generates a dynamic media interface to create something both interesting and practical.</p>
+            <p>For Module 2, the goal was to create an interactive device using the ESP32 TTGO T-display, a joystick, a button and a potentiometer. With the data obtained through the sensors and sent in serial communication to a laptop, it was proposed to create a program that generates media to handle this data and create something interesting with it.</p>
 
-            <p>My initial dilemma was how to explore my prior knowledge on electrical circuits without getting bogged down in lower levels of abstraction. Furthermore, I wanted to create something genuinely helpful. Inspired by the convenience of a counter clicker, I decided on a physical task and habit tracker to eliminate the friction of updating analog planners when they aren't nearby.</p>
+            <p>My initial dilemma was how to explore my prior knowledge on electrical circuits while not being actually hindered by them (by getting caught up in lower levels of abstraction, for example). Additionally, I wanted to create something that I actually found interesting and helpful, which hopefully would also speak to others. I decided upon making a task/habit tracker. </p>
 
-            <p>The device leverages a rich sensory experience: users press the button to toggle task status (completed/uncompleted), use the joystick horizontally to switch design themes, and turn the potentiometer to scroll through active tasks. Peer feedback during the showcase highlighted how much satisfying tactile encouragement physical controls add compared to purely digital interactions.</p>
+            <p>The motivation behind comes from my personal experience in keeping analog habit/task trackers in my planner with varying success. Although somewhat consistent, if I don’t have my journal close to me, I end up forgetting to update it. Inspired by the design of a counter clicker, I hope that the (supposed) convenience makes it easier to update the tasks quickly. Additionally, I enjoy the sensorial experience created by the buttons, joystick and potentiometer dial. The user may interact with the button to toggle between task status (completed/uncompleted), the joystick to switch between design themes, and the potentiometer to scroll between the different tasks being tracked. From the positive feedback received from peers during the showcase, many also enjoyed the physical tactile experience provided by the device and felt like this addition, compared to only having the digital interaction, could be a satisfying encouragement to complete their tasks.</p>
 
             <h2>Circuit Construction</h2>
-            <p>The electrical circuit was constructed on a breadboard by connecting the sensors to specific analog and digital pins on the ESP32:</p>
+            <p>The first step was to construct the electrical circuit on the breadboard. Referencing which were the analog pins on the ESP32, I chose to connect sensors to the microcontroller’s pins as follow:</p>
             <ul>
-                <li><strong>Pushbutton:</strong> Connected to pin 15</li>
-                <li><strong>Potentiometer:</strong> Connected to pin 13</li>
-                <li><strong>Joystick (VRX):</strong> Connected to pin 39</li>
-                <li><strong>Joystick (VRY):</strong> Connected to pin 32</li>
-                <li><strong>Joystick (SW):</strong> Connected to pin 33 (initially wired during design, though ultimately unused)</li>
-                <li><strong>Joystick (GND & +5V):</strong> GND to GND, +5V to +3V power rail (to normalize potentiometer readings)</li>
+                <li><i>Pushbutton:</i> Connected to pin 15</li>
+                <li><i>Potentiometer:</i> Connected to pin 13</li>
+                <li><i>Joystick (VRX):</i> Connected to pin 39</li>
+                <li><i>Joystick (VRY):</i> Connected to pin 32</li>
+                <li><i>Joystick (SW):</i> Connected to pin 33 (initially wired during design, though not used)</li>
+                <li><i>Joystick (GND & +5V):</i> GND to GND, +5V to +3V power rail (to normalize potentiometer readings)</li>
             </ul>
 
             <h2>Code Implementation & Challenges</h2>
