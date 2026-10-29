@@ -25,6 +25,12 @@ a{
   color: dodgerblue;
 }
 
+nav{
+  padding: 5px 20px 0px 20px ;
+  display: flex;
+  justify-content: space-between;
+}
+
 .module-project {
   padding-left: 10px;
 }

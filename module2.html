@@ -38,33 +38,115 @@
             </ul>
 
             <h2>Code Implementation & Challenges</h2>
-            <p>Building on Lab 2 code, I transitioned input controls from the ESP32's built-in buttons to the external pushbutton and handled state toggling directly through Arduino rather than dual buttons. To prevent overwhelming the system, serial prints were optimized to trigger only upon state changes.</p>
+                <p>Then, I started from the codes from Lab 2. Changes in the L/R program were made to transfer the interactiveness from the ESP32’s buttons to the external pushbutton and to also toggle between the states (message) displayed through Processing from the Arduino code instead of depending on two buttons as originally described. It was necessary to update the code to serial print only when the state was toggled (when button was pressed) to prevent overwhelming the system with serial prints.</p>
 
-            <p>A major challenge arose when integrating the potentiometer data with the button states over a single serial communication stream. Initially, the potentiometer values for active task selection conflicted with the button toggle messages. To resolve this, the potentiometer reading was mapped to a <code>currentTask</code> variable:</p>
+                <p>The first iteration had the Arduino code serial print the String that should be displayed whenever the button was pressed:</p>
+                <pre><code>void loop() {
+  if (ButtonPressed) {
+    ButtonPressed = false;
+    ButtonCompleted = !ButtonCompleted;
+  }
+
+  if (ButtonCompleted != lastButtonState) {
+    if (ButtonCompleted) {
+      Serial.println("[X]");
+    }
+    else {
+      Serial.println("[  ]");
+    }
+    lastButtonState = ButtonCompleted;
+  }
+}</code></pre>
+
+                <p>However, when adding the potentiometer functionality to change the active task, I faced the challenge of integrating the two sensors’ information into the serial communication to Processing. My plan was to have the potentiometer value determine the active task by attributing a part of the range for each task, inspired by the class usage in HTML/css. Originally, the implementation was fully done in the Arduino code, but that was not working as desired. The String (“[X]” or “[  ]”) would only appear at the moment the button was pressed and the potentiometer (with detected values displayed on the screen for debugging purposes) would take over the program, since the data was being mixed in the serial communication.</p>
+
+                <p>In order to properly implement the active task selection, the pot’s value determined the variable <code>currentTask</code> in the Arduino code (the <code>NUM_TASKS</code> is a global variable used to help updating the number of tasks tracked):</p>
                 <pre><code>int potValue = analogRead(POT_PIN);
-                int currentTask = (potValue * NUM_TASKS) / 4096;
-                if (currentTask &gt;= NUM_TASKS) {
-                    currentTask = NUM_TASKS - 1;
-                }</code></pre>
-            <p>This variable is packed alongside button events, active themes, and joystick actions into a single serial string sent to Processing, where the active task is highlighted visually and updated dynamically.</p>
+int currentTask = (potValue * NUM_TASKS) / 4096;
+if (currentTask >= NUM_TASKS) {
+    currentTask = NUM_TASKS - 1;
+}</code></pre>
 
-            <h2>Joystick Interactions: Themes & Reset Safety</h2>
-            <p>The joystick serves a dual purpose:</p>
-            <ul>
-                <li><strong>X-Axis (Theme Selection):</strong> Allows users to cycle through different UI themes, balancing personal aesthetic preferences (such as minimalist function-over-form layouts vs. more elaborate visuals).</li>
-                <li><strong>Y-Axis (Hold-to-Reset):</strong> Implements a 0.5-second hold requirement (<code>resetHoldTime</code>) to prevent accidental task resets.</li>
-            </ul>
+                <p>This variable was then serial printed to Processing in the packet along with whether the button was pressed or not (<code>buttonEvent</code>), the <code>activeTheme</code> and <code>joyYAction</code> (latter two still to be described):</p>
+                <pre><code>Serial.print(currentTask);
+Serial.print(",");
+Serial.print(buttonEvent);
+Serial.print(",");
+Serial.print(activeTheme);
+Serial.print(",");
+Serial.println(joyYAction);
 
-            <h2>Future Ideas & Peer Feedback</h2>
-            <p>Peer suggestions included adding a direct text-input box and integrating an API to maintain tracker history. Personal future ideas include adding a Tamagotchi-like virtual pet that evolves alongside your productivity progress to further motivate task completion.</p>
+delay(50);</code></pre>
 
-            <p>The code is available here: <a href="https://github.com/jyu-ogawa/coms3930-module-2" target="_blank" rel="noopener noreferrer">GitHub Repo</a></p>
+                <p>On the Processing code, the integer stored by <code>activeTask</code> selects which task is editable and formats to another colour (to highlight its active state). Notice that <code>'X'</code> and <code>' '</code> are now determined in the Processing side, being toggled if <code>buttonEvent = 1</code>:</p>
+                <pre><code>// Choose editable task
+if (activeTask >= 0 && activeTask < NUM_TASKS) {
+    // Toggle individual task with push button
+    if (buttonEvent == 1) {
+        if (taskStates[activeTask] == 'X') {
+            taskStates[activeTask] = ' '; 
+        } else {
+            taskStates[activeTask] = 'X'; 
+        }
+    }
+}
 
-            <h2>References</h2>
-            <ul>
-                <li><a href="https://processing.org/reference/text_.html" target="_blank" rel="noopener noreferrer">Processing Reference – text()</a></li>
-            </ul>
+// Formatting the tasks based on status
+if (i == activeTask) {
+    fill(63, 130, 198);
+    stroke(122, 162, 247); 
+    strokeWeight(2);
+} else {
+    fill(8, 67, 127);
+    stroke(45, 48, 68);
+    strokeWeight(1);
+}</code></pre>
+
+                <h2>Joystick Interactions: Themes & Reset Safety</h2>
+                <p>For the joystick usage, I was between implementing different tasks categories to be tracked (i.e. School, Personal, Work, etc.) or having different themes for the tracker by using the x-axis. For the y-axis, my goal was for it to allow the user to reset the tasks’ states to incomplete.</p>
+
+                <p>I found the first option not compatible with the joystick double functionality and columns were vulnerable to being reseted when switching between categories. Perhaps a more restrictive sensor program (to account for liminal movements) or more rigid/fixed joystick could have minimised these issues, but I preferred to continue with the second option.</p>
+
+                <p>The motivation behind allowing for different theme selection was my self-awareness that my personal aesthetic preferences are not always mainstream (e.g. I find IAB’s architecture comforting). Although I prefer a minimal design for a task tracker (almost a “function over form”), I know that it can be seen as boring or as uncreative. So I wanted to offer the option for a more elaborate UI.</p>
+
+                <p>An x-axis movement in the joystick (detected by pin 39 &lt; 1400 or &gt; 2600) updates the <code>activeTheme</code> variable, which is sent through serial communication to Processing to be interpreted as <code>themeIndex</code>, like done for the <code>activeTask</code> variable:</p>
+                <pre><code>if (joyX < 1400 && !joyMovedX && (currentTime - lastThemeChangeTime > themeCooldown)) {
+    activeTheme--;
+    if (activeTheme < 0) activeTheme = NUM_THEMES - 1;
+    joyMovedX = true;
+    lastThemeChangeTime = currentTime;
+} 
+else if (joyX > 2600 && !joyMovedX && (currentTime - lastThemeChangeTime > themeCooldown)) {
+    activeTheme++;
+    if (activeTheme >= NUM_THEMES) activeTheme = 0;
+    joyMovedX = true;
+    lastThemeChangeTime = currentTime;
+}</code></pre>
+
+                <p>For the y-axis reset functionality, I found out that I needed to add a hold-to-reset aspect to prevent the tracker from being accidently reset by the user. I settled on adding a 0.5s hold check (<code>resetHoldTime</code>) to affirm the user's intention:</p>
+                <pre><code>if (!resetTriggered && (currentTime - joyYPressStartTime >= resetHoldTime)) {
+    joyYAction = 1; // Trigger reset only after holding long enough
+    resetTriggered = true; // Lock so it only triggers once per hold
+}</code></pre>
+
+                <p>The minimal interface was created by just using <code>text()</code>, <code>textSize()</code>, and <code>fill()</code> to format the display. A for loop creates the iteration for each task, checking if it is the <code>activeTask</code>.</p>
+
+                <p>However, the more graphical interface had the additional use of <code>rect()</code> and <code>stroke()</code>, along with the assistance of Gemini 3.0 (Auto - Low) model to write the Processing code. Given my base design, I prompted it to create a more detailed and “aesthetical” interface, since I believed it would assist in better utilising Processing code and logic for a design choice that does not interest me. Still, the implementation of the code itself remained with basic functions and using extra libraries.</p>
+
+                <h2>Future Ideas & Peer Feedback</h2>
+                <ul>
+                    <li><strong>Suggestions received from peers:</strong> add an input box instead of only being in the code, import API to maintain tracker</li>
+                    <li><strong>Personal ideas:</strong> also add a pet (Tamagotchi-like) to motivate progress, inspired by other habit trackers</li>
+                </ul>
+
+                <p>The code is available here: <a href="https://github.com/jyu-ogawa/coms3930-module-2" target="_blank" rel="noopener noreferrer">GitHub Repo</a></p>
+
+                <h2>References</h2>
+                <ul>
+                    <li><a href="https://processing.org/reference/text_.html" target="_blank" rel="noopener noreferrer">Processing Reference – text()</a></li>
+                </ul>
             </article>
         </section>
     </main>
 </body>
+</html>
