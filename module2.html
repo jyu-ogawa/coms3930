@@ -36,6 +36,10 @@
                 <li><i>Joystick (SW):</i> Connected to pin 33 (initially wired during design, though not used)</li>
                 <li><i>Joystick (GND & +5V):</i> GND to GND, +5V to +3V power rail (to normalize potentiometer readings)</li>
             </ul>
+            <img src="images/module-2/mod2_breadboard.jpg" alt="breadboard circuit for task tracker" class="image_size">
+            <div class = "image_caption">
+                <p>Breadboard circuit for task tracker</p>
+            </div>
 
             <h2>Code Implementation & Challenges</h2>
                 <p>Then, I started from the codes from Lab 2. Changes in the L/R program were made to transfer the interactiveness from the ESP32’s buttons to the external pushbutton and to also toggle between the states (message) displayed through Processing from the Arduino code instead of depending on two buttons as originally described. It was necessary to update the code to serial print only when the state was toggled (when button was pressed) to prevent overwhelming the system with serial prints.</p>
@@ -58,9 +62,16 @@
   }
 }</code></pre>
 
-                <p>However, when adding the potentiometer functionality to change the active task, I faced the challenge of integrating the two sensors’ information into the serial communication to Processing. My plan was to have the potentiometer value determine the active task by attributing a part of the range for each task, inspired by the class usage in HTML/css. Originally, the implementation was fully done in the Arduino code, but that was not working as desired. The String (“[X]” or “[  ]”) would only appear at the moment the button was pressed and the potentiometer (with detected values displayed on the screen for debugging purposes) would take over the program, since the data was being mixed in the serial communication.</p>
+                <p>However, when adding the potentiometer functionality to change the active task, I faced the challenge of integrating the two sensors’ information into the serial communication to Processing. My plan was to have the potentiometer value determine the active task by attributing a part of the range for each task, inspired by the class usage in HTML/css. Originally, the implementation was fully done in the Arduino code, but that was not working as desired. The String (“[X]” or “[  ]”) would only appear at the moment the button was pressed and the potentiometer (with detected values displayed on the screen for debugging purposes) would take over the program, since the data was being mixed in the serial communication. his was the most challenging part to implement and was key for the tracker to be able to have more than one task and update them correctly.</p>
 
-                <p>In order to properly implement the active task selection, the pot’s value determined the variable <code>currentTask</code> in the Arduino code (the <code>NUM_TASKS</code> is a global variable used to help updating the number of tasks tracked):</p>
+                <video class="module_video" width="800" height="450" controls preload="metadata">
+            <source src="videos/mod2/display_tests/test-tracker_v02.mov" type="video/mp4">
+            </video>
+            <div class = "image_caption">
+                <p>Final Installation Display Video</p>
+            </div>
+
+                <p>In order to properly implement the active task selection,  switched from having the range detection and task status update all in the Arduino side to splitting it to have the latter be done in Processing. The pot’s value determined the variable <code>currentTask</code> in the Arduino code (the <code>NUM_TASKS</code> is a global variable used to help updating the number of tasks tracked):</p>
                 <pre><code>int potValue = analogRead(POT_PIN);
 int currentTask = (potValue * NUM_TASKS) / 4096;
 if (currentTask >= NUM_TASKS) {
@@ -105,6 +116,13 @@ if (i == activeTask) {
                 <h2>Joystick Interactions: Themes & Reset Safety</h2>
                 <p>For the joystick usage, I was between implementing different tasks categories to be tracked (i.e. School, Personal, Work, etc.) or having different themes for the tracker by using the x-axis. For the y-axis, my goal was for it to allow the user to reset the tasks’ states to incomplete.</p>
 
+                <video class="module_video" width="800" height="450" controls preload="metadata">
+            <source src="videos/mod2/display_tests/button-pot-joy_v01.mov" type="video/mp4">
+            </video>
+            <div class = "image_caption">
+                <p>Option 1 for joystick x-axis.</p>
+            </div>
+
                 <p>I found the first option not compatible with the joystick double functionality and columns were vulnerable to being reseted when switching between categories. Perhaps a more restrictive sensor program (to account for liminal movements) or more rigid/fixed joystick could have minimised these issues, but I preferred to continue with the second option.</p>
 
                 <p>The motivation behind allowing for different theme selection was my self-awareness that my personal aesthetic preferences are not always mainstream (e.g. I find IAB’s architecture comforting). Although I prefer a minimal design for a task tracker (almost a “function over form”), I know that it can be seen as boring or as uncreative. So I wanted to offer the option for a more elaborate UI.</p>
@@ -131,12 +149,28 @@ else if (joyX > 2600 && !joyMovedX && (currentTime - lastThemeChangeTime > theme
 
                 <p>The minimal interface was created by just using <code>text()</code>, <code>textSize()</code>, and <code>fill()</code> to format the display. A for loop creates the iteration for each task, checking if it is the <code>activeTask</code>.</p>
 
-                <p>However, the more graphical interface had the additional use of <code>rect()</code> and <code>stroke()</code>, along with the assistance of Gemini 3.0 (Auto - Low) model to write the Processing code. Given my base design, I prompted it to create a more detailed and “aesthetical” interface, since I believed it would assist in better utilising Processing code and logic for a design choice that does not interest me. Still, the implementation of the code itself remained with basic functions and using extra libraries.</p>
+                <p>However, the more graphical interface had the additional use of <code>rect()</code> and <code>stroke()</code>, along with the assistance of Gemini 3.0 (Auto - Low) model to write the Processing code. Given my base design, I prompted it to create a more detailed and “aesthetical” interface, since I believed it would assist in better utilising Processing code and logic for a design choice that does not interest me. Still, the implementation of the code itself remained with basic functions and without using extra libraries. After that prompt, I tweaked the code to my liking, e.g. the colour palette.</p>
 
-                <h2>Future Ideas & Peer Feedback</h2>
+                <video class="module_video" width="800" height="450" controls preload="metadata">
+            <source src="videos/mod2/display_tests/final_screen.mov" type="video/mp4">
+            </video>
+            <div class = "image_caption">
+                <p>Final Version of Display</p>
+            </div>
+
+                <h2>Showcase and Improvements</h2>
+                <p>The final version presented in the showcase can be seen in the video.</p>
+                <video class="module_video" width="800" height="450" controls preload="metadata">
+            <source src="videos/mod2/Module2_Showcase.mov" type="video/mp4">
+            </video>
+            <div class = "image_caption">
+                <p>Showcase Video</p>
+            </div>
+
+                <p>For the showcase, the interactive device was connected to my laptop and peers went around the classroom to see it and try it. From their feedback and inspired by other's projects, some possibilities for further development of my task tracker are</p>
                 <ul>
-                    <li><strong>Suggestions received from peers:</strong> add an input box instead of only being in the code, import API to maintain tracker</li>
-                    <li><strong>Personal ideas:</strong> also add a pet (Tamagotchi-like) to motivate progress, inspired by other habit trackers</li>
+                    <li><i>Suggestions from peers:</i> add an input box instead of only being in the code; import API to maintain tracker;</li>
+                    <li><i>Personal ideas:</i> add a pet (Tamagotchi-like) to motivate progress, inspired by other habit trackers; have other theme options; increment the aesthetic theme version.</li>
                 </ul>
 
                 <p>The code is available here: <a href="https://github.com/jyu-ogawa/coms3930-module-2" target="_blank" rel="noopener noreferrer">GitHub Repo</a></p>
