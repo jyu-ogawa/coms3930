@@ -1,6 +1,30 @@
 body {
   font-family: monospace;
+  margin: 0px;
+  overflow: hidden;
 }
+
+/* Split screen layout */
+.split-screen {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  height: 100dvh;
+  overflow: hidden;
+}
+
+  /* Left pane */
+  .document-pane {
+    overflow: auto;
+    padding: 8px;
+    min-width: 0;
+  }
+
+  .right-pane {
+    min-width: 0;
+    border-left: 1px solid #eee; /* Add a border to the right pane  for now*/
+  }
+
+/* headings */
 h1{
   color: dodgerblue;
   font-size: 4em;
@@ -31,6 +55,8 @@ nav{
   justify-content: space-between;
 }
 
+
+/* class specific styles */
 .module-project {
   padding-left: 10px;
 }
@@ -67,7 +93,29 @@ nav{
   }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 767px) {
+  body {
+    margin: 8px;
+    overflow: auto;
+  }
+
+  .split-screen {
+    display: block;
+    height: auto;
+    overflow: visible; 
+  }
+
+  .document-pane {
+    padding: 0px;
+    overflow: visible;
+  }
+
+  .right-pane {
+    display: none;
+  }
+}
+
+  @media (max-width: 400px){
   .module_video {
     max-width: 100%;
     height: auto;
