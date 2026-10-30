@@ -28,16 +28,20 @@ body {
 h1{
   color: dodgerblue;
   font-size: 4em;
+  padding-left: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 h2{
-  padding-top: 5px;
+  padding-top: 0px;
   font-size: 2em;
 }
 
 p{
   font-family: times new roman, sans-serif;
-  font-size: 1.1em;
+  font-size: 1.2em;
+  padding-bottom: 5px;
 }
 
 li{
@@ -50,7 +54,7 @@ a{
 }
 
 nav{
-  padding: 5px 20px 0px 20px ;
+  padding: 20px 20px 0px 20px ;
   display: flex;
   justify-content: space-between;
 }
@@ -85,7 +89,7 @@ nav{
 
 @media (min-width: 768px) {
   p{
-    max-width: 700px;
+    max-width: 750px;
   }
 
   li{
