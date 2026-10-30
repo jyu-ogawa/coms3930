@@ -35,6 +35,10 @@ nav{
   padding-left: 10px;
 }
 
+.about {
+  padding: 0px 0px 0px 10px;
+}
+
 .image_size{
   width: 400px;
   height: auto;
