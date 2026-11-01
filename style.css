@@ -1,14 +1,14 @@
 body {
   font-family: monospace;
   margin: 0px;
-  overflow: hidden;
+  overflow: auto;
 }
 
 /* Split screen layout */
 .split-screen {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-  height: 100dvh;
+  height: 80dvh; /* Adjust the height of the split screen as needed -- 80% because 100% was causing issues with the header*/
   overflow: hidden;
 }
 
@@ -21,7 +21,6 @@ body {
 
   .right-pane {
     min-width: 0;
-    border-left: 1px solid #eee; /* Add a border to the right pane  for now*/
   }
 
 /* headings */
@@ -74,9 +73,15 @@ nav{
   height: auto;
 }
 
+.right-pane-image {
+  width: 100%;
+  height: auto;
+}
+
 .image_caption {
   font-size: 0.9em;
   color: #666;
+  padding-left: 5px;
 }
 
 .image_caption p {
