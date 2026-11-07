@@ -4,6 +4,8 @@
   --caption-color: #666;
   --font-family: monospace;
   --body-font-family: times new roman, sans-serif;
+  --primary-padding: 10px;
+  --secondary-padding: 5px;
 }
 
 body {
@@ -23,7 +25,7 @@ body {
   /* Left pane */
   .document-pane {
     overflow: auto;
-    padding: 8px;
+    padding: var(--secondary-padding);
     min-width: 0;
   }
 
@@ -35,7 +37,7 @@ body {
 h1{
   color: var(--primary-color);
   font-size: 4em;
-  padding-left: 10px;
+  padding-left: var(--primary-padding);
   margin-top: 20px;
   margin-bottom: 20px;
 }
@@ -48,7 +50,8 @@ h2{
 p{
   font-family: var(--body-font-family);
   font-size: 1.2em;
-  padding-bottom: 5px;
+  padding-bottom: var(--secondary-padding);
+  padding-right: 10%;
 }
 
 li{
@@ -69,11 +72,11 @@ nav{
 
 /* class specific styles */
 .module-project {
-  padding-left: 10px;
+  padding-left: var(--primary-padding);
 }
 
 .about {
-  padding: 0px 0px 0px 10px;
+  padding: 0px 0px 0px var(--primary-padding);
 }
 
 .image_size{
@@ -84,7 +87,7 @@ nav{
 .image_caption {
   font-size: 0.9em;
   color: var(--caption-color);
-  padding-left: 5px;
+  padding-left: var(--secondary-padding);
 }
 
 .image_caption p {
@@ -97,7 +100,9 @@ nav{
 }
 
 .module_video {
-  padding: 5px;
+  padding: var(--secondary-padding);
+  max-width: 95%;
+  height: auto;
 }
 
 @media (min-width: 768px) {
