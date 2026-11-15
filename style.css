@@ -69,6 +69,11 @@ nav{
   justify-content: space-between;
 }
 
+.nav-modules { /* so that the modules are grouped tgt on the top right */
+  display: flex;
+  gap: 20px;
+}
+
 
 /* class specific styles */
 .module-project {

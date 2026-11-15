@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 3 Design Documentation</title>
+</head>
+<body>
+    <header>
+    <nav>
+        <a href="index.html">Home</a>
+        <div class="nav-modules"> <!-- so that the modules are grouped tgt on the top right --> 
+            <a href="module1.html">Module 1</a>
+            <a href="module2.html">Module 2</a>
+        </div>
+    </nav>
+    <h1>COMS BC3930: Module 3 Documentation</h1>
+    </header>
+    <div class ="split-screen">
+        <div class="document-pane">
+    <main>
+        <section>
+            <article class="module-project">
+            <h2>Distributed Communications</h2>
+            
+            <ul>
+                <li><i>ESP32-TTGO T-Display:</i> conntected to computer</li>
+            </ul>
+
+            <h2>Code Implementation & Challenges</h2>
+                <p>Then,</p>
+
+                <p>The first iteration had the Arduino code serial print the String that should be displayed whenever the button was pressed:</p>
+                <pre><code>void loop() {
+  if (ButtonPressed) {
+    ButtonPressed = false;
+    ButtonCompleted = !ButtonCompleted;
+  }
+
+  if (ButtonCompleted != lastButtonState) {
+    if (ButtonCompleted) {
+      Serial.println("[X]");
+    }
+    else {
+      Serial.println("[  ]");
+    }
+    lastButtonState = ButtonCompleted;
+  }
+}</code></pre>
+
+                <p>However, when adding the potentiometer functionality to change the active task, I faced the challenge of integrating the two sensors’ information into the serial communication to Processing. My plan was to have the potentiometer value determine the active task by attributing a part of the range for each task, inspired by the class usage in HTML/css. Originally, the implementation was fully done in the Arduino code, but that was not working as desired. The String (“[X]” or “[  ]”) would only appear at the moment the button was pressed and the potentiometer (with detected values displayed on the screen for debugging purposes) would take over the program, since the data was being mixed in the serial communication. his was the most challenging part to implement and was key for the tracker to be able to have more than one task and update them correctly.</p>
+
+                <video class="module_video" width="800" height="450" controls preload="metadata">
+            <source src="videos/mod2/display_tests/test-tracker_v02.mov" type="video/mp4">
+            </video>
+            <div class = "image_caption">
+                <p>Final Installation Display Video</p>
+            </div>
+
+                <p>In order to properly implement the active task selection,  switched from having the range detection and task status update all in the Arduino side to splitting it to have the latter be done in Processing. The pot’s value determined the variable <code>currentTask</code> in the Arduino code (the <code>NUM_TASKS</code> is a global variable used to help updating the number of tasks tracked):</p>
+                <pre><code>int potValue = analogRead(POT_PIN);
+int currentTask = (potValue * NUM_TASKS) / 4096;
+if (currentTask >= NUM_TASKS) {
+    currentTask = NUM_TASKS - 1;
+}</code></pre>
+
+                <p>This variable was then serial printed to Processing in the packet along with whether the button was pressed or not (<code>buttonEvent</code>), the <code>activeTheme</code> and <code>joyYAction</code> (latter two still to be described):</p>
+                <pre><code>Serial.print(currentTask);
+Serial.print(",");
+Serial.print(buttonEvent);
+Serial.print(",");
+Serial.print(activeTheme);
+Serial.print(",");
+Serial.println(joyYAction);
+
+delay(50);</code></pre>
+
+                <p>On the Processing code, the integer stored by <code>activeTask</code> selects which task is editable and formats to another colour (to highlight its active state). Notice that <code>'X'</code> and <code>' '</code> are now determined in the Processing side, being toggled if <code>buttonEvent = 1</code>:</p>
+                <pre><code>// Choose editable task
+if (activeTask >= 0 && activeTask < NUM_TASKS) {
+    // Toggle individual task with push button
+    if (buttonEvent == 1) {
+        if (taskStates[activeTask] == 'X') {
+            taskStates[activeTask] = ' '; 
+        } else {
+            taskStates[activeTask] = 'X'; 
+        }
+    }
+}
+
+// Formatting the tasks based on status
+if (i == activeTask) {
+    fill(63, 130, 198);
+    stroke(122, 162, 247); 
+    strokeWeight(2);
+} else {
+    fill(8, 67, 127);
+    stroke(45, 48, 68);
+    strokeWeight(1);
+}</code></pre>
+
+                <h2>Joystick Interactions: Themes & Reset Safety</h2>
+                <p>For the joystick usage, I was between implementing different tasks categories to be tracked (i.e. School, Personal, Work, etc.) or having different themes for the tracker by using the x-axis. For the y-axis, my goal was for it to allow the user to reset the tasks’ states to incomplete.</p>
+
+                <video class="module_video" width="800" height="450" controls preload="metadata">
+            <source src="videos/mod2/display_tests/button-pot-joy_v01.mov" type="video/mp4">
+            </video>
+            <div class = "image_caption">
+                <p>Option 1 for joystick x-axis.</p>
+            </div>
+
+                <p>I found the first option not compatible with the joystick double functionality and columns were vulnerable to being reseted when switching between categories. Perhaps a more restrictive sensor program (to account for liminal movements) or more rigid/fixed joystick could have minimised these issues, but I preferred to continue with the second option.</p>
+
+                <p>The motivation behind allowing for different theme selection was my self-awareness that my personal aesthetic preferences are not always mainstream (e.g. I find IAB’s architecture comforting). Although I prefer a minimal design for a task tracker (almost a “function over form”), I know that it can be seen as boring or as uncreative. So I wanted to offer the option for a more elaborate UI.</p>
+
+                <p>An x-axis movement in the joystick (detected by pin 39 &lt; 1400 or &gt; 2600) updates the <code>activeTheme</code> variable, which is sent through serial communication to Processing to be interpreted as <code>themeIndex</code>, like done for the <code>activeTask</code> variable:</p>
+                <pre><code>if (joyX < 1400 && !joyMovedX && (currentTime - lastThemeChangeTime > themeCooldown)) {
+    activeTheme--;
+    if (activeTheme < 0) activeTheme = NUM_THEMES - 1;
+    joyMovedX = true;
+    lastThemeChangeTime = currentTime;
+} 
+else if (joyX > 2600 && !joyMovedX && (currentTime - lastThemeChangeTime > themeCooldown)) {
+    activeTheme++;
+    if (activeTheme >= NUM_THEMES) activeTheme = 0;
+    joyMovedX = true;
+    lastThemeChangeTime = currentTime;
+}</code></pre>
+
+                <p>For the y-axis reset functionality, I found out that I needed to add a hold-to-reset aspect to prevent the tracker from being accidently reset by the user. I settled on adding a 0.5s hold check (<code>resetHoldTime</code>) to affirm the user's intention:</p>
+                <pre><code>if (!resetTriggered && (currentTime - joyYPressStartTime >= resetHoldTime)) {
+    joyYAction = 1; // Trigger reset only after holding long enough
+    resetTriggered = true; // Lock so it only triggers once per hold
+}</code></pre>
+
+                <p>The minimal interface was created by just using <code>text()</code>, <code>textSize()</code>, and <code>fill()</code> to format the display. A for loop creates the iteration for each task, checking if it is the <code>activeTask</code>.</p>
+
+                <p>However, the more graphical interface had the additional use of <code>rect()</code> and <code>stroke()</code>, along with the assistance of Gemini 3.0 (Auto - Low) model to write the Processing code. Given my base design, I prompted it to create a more detailed and “aesthetical” interface, since I believed it would assist in better utilising Processing code and logic for a design choice that does not interest me. Still, the implementation of the code itself remained with basic functions and without using extra libraries. After that prompt, I tweaked the code to my liking, e.g. the colour palette.</p>
+
+                <video class="module_video" width="800" height="450" controls preload="metadata">
+            <source src="videos/mod2/display_tests/final_screen.mov" type="video/mp4">
+            </video>
+            <div class = "image_caption">
+                <p>Final Version of Display</p>
+            </div>
+
+                <h2>Showcase and Improvements</h2>
+                <p>The final version presented in the showcase can be seen in the video.</p>
+                <video class="module_video" width="800" height="450" controls preload="metadata">
+            <source src="videos/mod2/Module2_Showcase.mov" type="video/mp4">
+            </video>
+            <div class = "image_caption">
+                <p>Showcase Video</p>
+            </div>
+
+                <p>For the showcase, the interactive device was connected to my laptop and peers went around the classroom to see it and try it. From their feedback and inspired by other's projects, some possibilities for further development of my task tracker are</p>
+                <ul>
+                    <li><i>Suggestions from peers:</i> add an input box instead of only being in the code; import API to maintain tracker;</li>
+                    <li><i>Personal ideas:</i> add a pet (Tamagotchi-like) to motivate progress, inspired by other habit trackers; have other theme options; increment the aesthetic theme version.</li>
+                </ul>
+
+                <p>The code is available here: <a href="https://github.com/jyu-ogawa/coms3930-module-2" target="_blank" rel="noopener noreferrer">GitHub Repo</a></p>
+
+                <h2>References</h2>
+                <ul>
+                    <li><a href="https://processing.org/reference/text_.html" target="_blank" rel="noopener noreferrer">Processing Reference – text()</a></li>
+                </ul>
+            </article>
+        </section>
+    </main>
+       </div>
+        <aside class="right-pane">
+            <img src="images/module-2/module2_schem.png" alt="Module 2 Fritzing Schematic" class="right-pane-image">
+            <div class = "image_caption">
+                <p>Module 2 Circuit Schematic, created using Fritzing.</p>
+            </div>
+        </aside>
+    </div>
+</body>
+</html>
