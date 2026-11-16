@@ -2,6 +2,7 @@
 :root {
   --primary-color: dodgerblue;
   --caption-color: #666;
+  --highlight-color: rgb(169, 212, 255); 
   --font-family: monospace;
   --body-font-family: times new roman, sans-serif;
   --primary-padding: 10px;
@@ -27,6 +28,7 @@ body {
     overflow: auto;
     padding: var(--secondary-padding);
     min-width: 0;
+    padding-bottom: 8dvh;
   }
 
   .right-pane {
@@ -59,6 +61,12 @@ li{
   font-size: 1.1em;
 }
 
+pre {
+    white-space: pre-wrap;       
+    word-wrap: break-word;      
+    overflow-x: auto;          
+}
+
 a{
   color: var(--primary-color);
 }
@@ -74,8 +82,16 @@ nav{
   gap: 20px;
 }
 
+.current_page {
+  text-decoration: underline;
+}
+
 
 /* class specific styles */
+.highlight-txt{
+  background-color: var(--highlight-color);
+}
+
 .module-project {
   padding-left: var(--primary-padding);
 }
@@ -86,6 +102,11 @@ nav{
 
 .image_size{
   width: 400px;
+  height: auto;
+}
+
+.image_size_big{
+  width: 800px;
   height: auto;
 }
 
