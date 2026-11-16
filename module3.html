@@ -75,7 +75,13 @@ if (x &lt;= 240.0f) {
   spr.fillCircle((int)x, (int)bubbleY, 10, playerColors[PLAYER_ID]);
   spr.drawCircle((int)x, (int)bubbleY, 10, TFT_WHITE);</code></pre>
 
-                        <p>In my first iteration, I had the issue of the bubbles leaving a trail of pixels instead of the clear background image. An option I tried was repatching the pixels after the bubble passed by, but then a challenge that I faced was to erase the bubbles from the screen as they moved in the frames, because they started to form a trail of frames in the display (see image), and they often kept flickering too. I remembered about the sprite buffer technique that I learned about in Module 1 to handle the heavy graphics that are rapidly changing. Instead of directly drawing the pixels to the TFT screen, they are first rendered in a buffer to create the full frame, which is pushed already complete to the screen.</p>
+                        <p>In my first iteration, I had the issue of the bubbles leaving a trail of pixels instead of the clear background image. An option I tried after a suggestion from Gemini 3.0 (Auto - Low), after being prompted "Why is there a pixel trail in my screen, as pictured, when the bubbles moves?" (because I was confused why I did not have that issue with my Module 1 bubbles) was repatching the pixels after the bubble passed by, but then a challenge that I faced was to erase the bubbles from the screen as they moved in the frames, because they started to form a trail of frames in the display, and they often kept flickering too.</p>
+                        
+                       <video class="module_video" width="800" height="450"  preload="metadata">
+                        <source src="videos/mod3/trailError.MOV" type="video/mp4">
+                        </video>
+
+                        <p>I remembered about the sprite buffer technique that I learned about in Module 1 to handle the heavy graphics that are rapidly changing. Instead of directly drawing the pixels to the TFT screen, they are first rendered in a buffer to create the full frame, which is pushed already complete to the screen.</p>
 
                         <pre><code>TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite spr = TFT_eSprite(&tft); // active render sprite buffer
@@ -111,6 +117,17 @@ void drawScreen() {
 }</code></pre>
 
                         <p>My group partner also thought it would be good to have the target bar be coloured the same as the obtained point/notification message, so that was implemented as well.</p>
+
+                        <h2>Showcase and Improvements</h2>
+                        <p>The final version presented in the showcase can be seen in the video.</p>
+                        <video class="module_video" width="800" height="450" controls preload="metadata">
+                        <source src="videos/mod3/gameplay.MOV" type="video/mp4">
+                        </video>
+                        <div class = "image_caption">
+                            <p>Showcase Video</p>
+                        </div>
+
+                         <p>The code is available here (TO BE ADDED WITH ACTUAL LINK): <a href="https://github.com/jyu-ogawa/coms3930-module-3" target="_blank" rel="noopener noreferrer">GitHub Repo</a></p>
 
                         <h2>References</h2>
                         <ul>
