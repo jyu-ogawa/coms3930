@@ -159,7 +159,7 @@ nav{
 }
 
 .right-pane-image {
-  width: 95%; /* Adjust the width of the right pane image as needed, not take the whole pane*/
+  width: 30dvw; /* Adjust the width of the right pane image as needed, not take the whole pane*/
   height: auto;
 }
 
@@ -199,6 +199,18 @@ nav{
   /* Hide right pane for mobile view */
   .right-pane {
     display: none;
+  }
+
+  h1{
+    font-size: 3em;
+  }
+
+  nav {
+    font-size: 0.8em;
+  }
+
+  button {
+    font-size: 0.8em;
   }
 }
 
